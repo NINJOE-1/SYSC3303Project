@@ -8,6 +8,7 @@ Samuel Mauricla 101233500
 Bhavaan Balasubramaniam 101233825 
 
 ## Breakdown of the tasks:
+
 Joseph Vretnar - FloorSubsystem, Scheduler, Event, ElevatorSubsystem, Direction and UML Diagrams
 
 Samuel Mauricla- The FloorSubsystemTest
@@ -56,33 +57,38 @@ To edit the floors and requests, edit the inputFile.txt file
 
 ## Expected Output
 
-The code below is a sample output:
-Elevator has reached 3
-Elevator picking up passengers 
-Elevator moved to floor 2
-Elevator has reached 1
-Elevator dropping off passengers
-Elevator completed request at Sat Feb 03 12:05:41 EST 2024
+The code below is a sample output:<br>
 
-Request at SAT Feb 03 12:10:00 EST 2024 (2->8) is being processed
-Elevator has reached 2
-Elevator picking up passengers
-Elevator moved to floor 3
-Elevator moved to floor 4
-Elevator moved to floor 5
-Elevator moved to floor 6
-Elevator moved to floor 7
-Elevator has reached 8
-Elevator dropping off passengers
-Elevator completed request at Sat Feb 03 12:10:59 EST 2024
+Elevator has reached 3<br>
+Elevator picking up passengers<br>
+Elevator moved to floor 2<br>
+Elevator has reached 1<br>
+Elevator dropping off passengers<br>
+Elevator completed request at Sat Feb 03 12:05:41 EST 2024<br>
+
+Request at SAT Feb 03 12:10:00 EST 2024 (2->8) is being processed<br>
+Elevator has reached 2<br>
+Elevator picking up passengers<br>
+Elevator moved to floor 3<br>
+Elevator moved to floor 4<br>
+Elevator moved to floor 5<br>
+Elevator moved to floor 6<br>
+Elevator moved to floor 7<br>
+Elevator has reached 8<br>
+Elevator dropping off passengers<br>
+Elevator completed request at Sat Feb 03 12:10:59 EST 2024<br>
 
 ## Logging:
-The program uses the `java.util.logging.Logger` for logging any sort of unexpected errors or events. 
+The program uses the `java.util.logging.Logger` for logging any sort of unexpected errors or events.<br>
 Log messages are displayed in the console in the IDE.
 
 ## Diagrams:
 
 The UML diagram can be found for this project can be found using the link: 
+
+The Sequence diagram for all the classes and functions can be found using this link:
+
+The Sequence diagram for the program's execution can be found using this link:
 
 
 

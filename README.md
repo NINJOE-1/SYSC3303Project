@@ -93,7 +93,7 @@ This shows the requests that were made, when they were completed based on the cu
 
 The UML diagram can be found for this project can be found using the [link](Interation1ClassDiagram.png): 
 
-The Sequence diagram for all the classes and functions can be found using this [link](Sequence Diagrams):
+The Sequence diagram for all the classes and functions can be found using this [link](SequenceDiagrams):
 
 
 

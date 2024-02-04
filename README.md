@@ -6,11 +6,9 @@ Bhavaan Balasubramaniam - 101233825
 
 ## Breakdown of the tasks:
 
-Joseph Vretnar - FloorSubsystem, Scheduler, Event, ElevatorSubsystem, Direction and UML Diagrams
-
-Samuel Mauricla- The FloorSubsystemTest
-
-Bhavaan Balasubramaniam - README.md and Sequence Diagrams
+Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem.<br>
+Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
+Bhavaan Balasubramaniam - Wrote README.md, created UML class and sequence diagrams.
 
 ## Project Iteration 1: Establishing Connections between the three subsystems
 The purpose of Iteration 1 is to create 3 threads which are the Elevator, Floor and Scheduler. The Elevator and Floor subsystems are the clients, while the Scheduler is the server. The Floor will read in the following format: Time, Floor, Button. Each line of input is sent back to the scheduler and then the Elevators will make calls to the Scheduler replying back when work is needed.The Elevator will then send the data back to the Scheduler who will then send it back to the Floor. In this Iteration, the scheduler is only being used as a communication channel from the Floor thread to the Elevator thread and back again.

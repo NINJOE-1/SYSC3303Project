@@ -18,9 +18,12 @@ import static java.lang.Math.abs;
  * The type ElevatorSubsystem.
  */
 // create class elevatorSubsystem that implements Runnable
-public class ElevatorSubsystem implements Runnable{
+public class ElevatorSubsystem implements Runnable {
     private final Scheduler scheduler;
     private int currentFloor;
+    private Event event = null;
+    ElevatorStateMachine currentState = ElevatorStateMachine.CurrentFloorWaiting;
+    public boolean testing = false;
 
     /**
      * Instantiates a new ElevatorSubsystem.
@@ -32,6 +35,63 @@ public class ElevatorSubsystem implements Runnable{
         this.scheduler = scheduler;
         currentFloor = 0;
     }
+
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
+
+    public enum ElevatorStateMachine {
+        CurrentFloorWaiting {
+            public ElevatorStateMachine nextState() {
+                System.out.println("Elevator is in the waiting state");
+                return MovingRequest;
+            }
+        },
+
+        MovingRequest {
+            public ElevatorStateMachine nextState() {
+                System.out.println("Elevator is in the moving to request state");
+                return ArriveRequest;
+            }
+        },
+
+        ArriveRequest {
+            public ElevatorStateMachine nextState() {
+                System.out.println("Elevator is in the arrived at request state");
+                return PickUpPassenger;
+            }
+        },
+
+        PickUpPassenger {
+            public ElevatorStateMachine nextState() {
+                System.out.println("Elevator is in the picking up passenger state");
+                return MovingDestination;
+            }
+        },
+
+        MovingDestination {
+            public ElevatorStateMachine nextState() {
+                System.out.println("Elevator is in the moving to destination state");
+                return ArriveDestination;
+            }
+        },
+
+        ArriveDestination {
+            public ElevatorStateMachine nextState() {
+                System.out.println("Elevator is in the arrived at destination state");
+                return DropOffPassenger;
+            }
+        },
+
+        DropOffPassenger {
+            public ElevatorStateMachine nextState() {
+                System.out.println("Elevator is in the dropping off passenger state");
+                return CurrentFloorWaiting;
+            }
+        };
+        public abstract ElevatorStateMachine nextState();
+    }
+
 
     // create method move that takes in the current floor, direction, and desired floor
     private void move(int currentFloor, Direction d, int desiredFloor) {
@@ -72,38 +132,70 @@ public class ElevatorSubsystem implements Runnable{
     @Override
     // create run method
     public void run() {
-        while(true) {
-            Event event = scheduler.processEvent();
-            int diff = currentFloor - event.getCurrentFloor();
-            if(diff>0) {
-                move(currentFloor, Direction.DOWN, event.getCurrentFloor());
-                System.out.println("Elevator picking up passengers");
-            } else if(diff < 0) {
-                move(currentFloor, Direction.UP, event.getCurrentFloor());
-                System.out.println("Elevator picking up passengers");
-            }
+        running:
+        while (true) {
+            switch (currentState) {
+                case CurrentFloorWaiting: {
+                    currentState = currentState.nextState();
+                    event = scheduler.processEvent();
+                    break;
+                }
 
-            int move = abs(currentFloor - event.getRequestedFloor());
-            if(event.getDirection() == Direction.UP) {
-                move(currentFloor, Direction.UP, event.getRequestedFloor());
-                System.out.println("Elevator dropping off passengers");
-            } else if(event.getDirection() == Direction.DOWN) {
-                move(currentFloor, Direction.DOWN, event.getRequestedFloor());
-                System.out.println("Elevator dropping off passengers");
-            } else {
-                move(currentFloor, Direction.IDLE, event.getRequestedFloor());
-            }
+                case MovingRequest: {
+                    currentState = currentState.nextState();
+                    int diff = currentFloor - event.getCurrentFloor();
+                    if(diff>0) {
+                        move(currentFloor, Direction.DOWN, event.getCurrentFloor());
+                    } else if(diff < 0) {
+                        move(currentFloor, Direction.UP, event.getCurrentFloor());
+                    }
+                    break;
+                }
 
-            Date time = event.getTime();
-            Calendar c = Calendar.getInstance();
-            c.setTime(time);
-            int movingTime = abs(diff) * 6;
-            int movingTime2 = move * 6;
-            int waitingTime = 17;
-            c.add(Calendar.SECOND, (movingTime + waitingTime + movingTime2));
-            time = c.getTime();
-            scheduler.complete(time, this.currentFloor, true);
+                case ArriveRequest: {
+                    currentState = currentState.nextState();
+                    break;
+                }
+
+                case PickUpPassenger: {
+                    currentState = currentState.nextState();
+                    break;
+                }
+
+                case MovingDestination: {
+                    currentState = currentState.nextState();
+                    if (event.getDirection() == Direction.UP) {
+                        move(currentFloor, Direction.UP, event.getRequestedFloor());
+                    } else if (event.getDirection() == Direction.DOWN) {
+                        move(currentFloor, Direction.DOWN, event.getRequestedFloor());
+                    } else {
+                        move(currentFloor, Direction.IDLE, event.getRequestedFloor());
+                    }
+                    break;
+                }
+
+                case ArriveDestination: {
+                    currentState = currentState.nextState();
+                    break;
+                }
+
+                case DropOffPassenger: {
+                    Date time = event.getTime();
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(time);
+                    int movingTime = abs(currentFloor - event.getRequestedFloor()) * 6;
+                    int waitingTime = 17;
+                    int movingTime2 = abs(currentFloor - event.getCurrentFloor()) * 6;
+                    c.add(Calendar.SECOND, (movingTime + waitingTime + movingTime2));
+                    time = c.getTime();
+                    scheduler.complete(time, this.currentFloor, true);
+                    currentState = currentState.nextState();
+                    if (testing) {
+                        break running;
+                    }
+                    break;
+                }
+            }
         }
-
     }
 }

@@ -18,8 +18,9 @@ import java.util.LinkedList;
  */
 public class Scheduler {
     // create class Scheduler
-    private final LinkedList<Event> requests = new LinkedList<>();
+    private static LinkedList<Event> requests = new LinkedList<>();
     private final LinkedList<Event> completed = new LinkedList<>();
+    schedulerStateMachine currentState = schedulerStateMachine.waiting;
 
     /**
      * Add event.
@@ -29,6 +30,9 @@ public class Scheduler {
     // create method addEvent that takes in an event and adds it to the requests list
     public synchronized void addEvent(Event r) {
         requests.add(r);
+        if (currentState.equals(Scheduler.schedulerStateMachine.waiting)) {
+            currentState = currentState.nextState();
+        }
         notifyAll();
     };
 
@@ -48,6 +52,7 @@ public class Scheduler {
         }
         Event r = requests.peek();
         System.out.println("Request at " + r.getTime().toString() + " (" + r.getCurrentFloor() + " -> " + r.getRequestedFloor() + ") is being processed");
+        currentState = currentState.nextState();
         return r;
     }
 
@@ -71,6 +76,34 @@ public class Scheduler {
         return completed.pop();
     }
 
+    public enum schedulerStateMachine {
+        waiting {
+            public schedulerStateMachine nextState() {
+                System.out.println("Scheduler is in the waiting state");
+                return working;
+            }
+        },
+
+        working {
+            public schedulerStateMachine nextState() {
+                System.out.println("Scheduler is in the working state");
+                return finished;
+            }
+        },
+
+        finished {
+            public schedulerStateMachine nextState() {
+                System.out.println("Scheduler is in the finished request state");
+                if (!requests.isEmpty()) {
+                    return working;
+                } else {
+                    return waiting;
+                }
+            }
+        };
+        public abstract schedulerStateMachine nextState();
+    }
+
     /**
      * Complete.
      *
@@ -80,15 +113,12 @@ public class Scheduler {
      */
     // create method complete that takes in a completion time, current floor, and a boolean visitedRequestedFloor
     public synchronized void complete(Date completionTime, int currentFloor, boolean visitedRequestedFloor) {
-        assert requests.peek() != null;
-        if(currentFloor == requests.peek().getRequestedFloor()) {
-            assert requests.peek() != null;
-            if (requests.peek().getTime().compareTo(completionTime) < 0 && visitedRequestedFloor) {
-                System.out.println("Elevator completed request at " + completionTime.toString() + "\n");
-                Event completedRequest = requests.pop();
-                completed.add(completedRequest);
-                notifyAll();
-            }
+        if (currentFloor == requests.peek().getRequestedFloor() && visitedRequestedFloor) {
+            System.out.println("Elevator complete request at " + completionTime.toString());
+            Event completedRequest = requests.pop();
+            completed.add(completedRequest);
+            notifyAll();
+            currentState = currentState.nextState();
         }
     }
 

@@ -65,19 +65,26 @@ To edit the floors and requests, edit the inputFile.txt file
 
 ## Expected Output
 ### Simulation
-When running the simulation the output will be the following for the elevator moving from floor 2 -> 8:
+When running the simulation the output will be the following for the elevator moving from floor 1 -> 5:
 ```
-Request at Sat Feb 03 12:10:00 EST 2024 (2 -> 8) is being processed
-Elevator has reached 2
-Elevator picking up passengers
+Elevator is in the waiting state
+Scheduler is in the waiting state
+Request at Sat Feb 17 12:00:00 EST 2024 (1 -> 5) is being processed
+Scheduler is in the working state
+Elevator is in the moving to request state
+Elevator has reached 1
+Elevator is in the arrived at request state
+Elevator is in the picking up passenger state
+Elevator is in the moving to destination state
+Elevator moved to floor 2
 Elevator moved to floor 3
 Elevator moved to floor 4
-Elevator moved to floor 5
-Elevator moved to floor 6
-Elevator moved to floor 7
-Elevator has reached 8
-Elevator dropping off passengers
-Elevator completed request at Sat Feb 03 12:10:59 EST 2024
+Elevator has reached 5
+Elevator is in the arrived at destination state
+Elevator complete request at Sat Feb 17 12:00:41 EST 2024
+Scheduler is in the finished request state
+Elevator is in the dropping off passenger state
+Elevator is in the waiting state
 ```
 This shows the general layout that should be expected when running the simulation. The elevator will move to the floor that the button was pressed on, pick up the passengers, then move to the floor for the button they pressed in the elevator, once the elevator has reached the floor, it will drop off the passengers and complete the request.
 
@@ -92,6 +99,24 @@ Scheduler is in the finished request state
 Scheduler is in the waiting state
 
 When running the ElevatorSubsystem test case, the output should produce the following results:
+Elevator is in the waiting state
+Scheduler is in the waiting state
+Request at Sat Feb 17 12:00:00 EST 2024 (1 -> 5) is being processed
+Scheduler is in the working state
+Elevator is in the moving to request state
+Elevator has reached 1
+Elevator is in the arrived at request state
+Elevator is in the picking up passenger state
+Elevator is in the moving to destination state
+Elevator moved to floor 2
+Elevator moved to floor 3
+Elevator moved to floor 4
+Elevator has reached 5
+Elevator is in the arrived at destination state
+Elevator complete request at Sat Feb 17 12:00:41 EST 2024
+Scheduler is in the finished request state
+Elevator is in the dropping off passenger state
+Elevator is in the waiting state
 
 This shows the requests that were made, when they were completed based on the current time, and the output should have no errors. If the output has an error then the test has failed.
 

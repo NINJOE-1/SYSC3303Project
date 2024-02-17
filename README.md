@@ -126,7 +126,7 @@ The UML diagram can be found for this project can be found using this [link](Int
 
 The Sequence diagram for all the classes and functions can be found using this [link](SequenceDiagrams):
 
-The State Machine diagram for the ElevatorSubsytem and Scheduler can be found using this 
+The State Machine diagram for the ElevatorSubsytem and Scheduler can be found using this [link](StateMachineDiagrams):
 
 
 

@@ -1,4 +1,4 @@
-# SYSC 3303 Elevator Project Iteration 1
+# SYSC 3303 Elevator Project Iteration 2
 ## Group 9
 Joseph Vretenar 101234613<br>
 Samuel Mauricla - 101233500<br>
@@ -8,10 +8,10 @@ Bhavaan Balasubramaniam - 101233825
 
 Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem.<br>
 Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
-Bhavaan Balasubramaniam - Wrote README.md, created UML class and sequence diagrams.
+Bhavaan Balasubramaniam - Wrote README.md, Created the State Machine Diagrams.<br>
 
-## Project Iteration 1: Establishing Connections between the three subsystems
-The purpose of Iteration 1 is to create 3 threads which are the Elevator, Floor and Scheduler. The Elevator and Floor subsystems are the clients, while the Scheduler is the server. The Floor will read in the following format: Time, Floor, Button. Each line of input is sent back to the scheduler and then the Elevators will make calls to the Scheduler replying back when work is needed.The Elevator will then send the data back to the Scheduler who will then send it back to the Floor. In this Iteration, the scheduler is only being used as a communication channel from the Floor thread to the Elevator thread and back again.
+## Project Iteration 2: Adding the Scheduler and Elevator Subsystems
+The purpose of Iteration 2 is to implement State Machines for the Scheduler and Elevator Subsystems and assume that only 1 elevator is present. In addition, the Elevator Subsystem will notify the scheduler when an elevator reaches the floor.
 
 ## Files:
 ### [FloorSubsystem.java](src/FloorSubsystem.java)
@@ -41,6 +41,13 @@ The Testing class is reponsible for testing the Scheduler and ElevatorSubsystem 
 The test is executed by passing in default values and simulates the event.
 Assertions are implemented to ensure the code is correct. 
 
+### 
+The SchedulerTest class will test the transitions through 'working' and 'finished' states when events are added, processed, and requests are completed.
+It will ensure the sample data displayed correctly.
+
+### 
+The ElevatorSubsystemTest class will ensure that the initial state of the ElevatorSubsystem is set to CurrentFloorWaiting.
+It will also ensure that the upon processing an event triggered by a Scheduler, the ElevatorSubsystem transitions to the MovingRequest state.
 
 ## Setup Instructions
 1. Ensure Java is installed on your system
@@ -75,26 +82,26 @@ Elevator completed request at Sat Feb 03 12:10:59 EST 2024
 This shows the general layout that should be expected when running the simulation. The elevator will move to the floor that the button was pressed on, pick up the passengers, then move to the floor for the button they pressed in the elevator, once the elevator has reached the floor, it will drop off the passengers and complete the request.
 
 ### Testing
-When running the test case, the output should produce the following results:
-```
-Request at Sat Feb 03 12:00:00 EST 2024 (1 -> 5) is being processed
-Event 1: Sat Feb 03 12:00:00 EST 2024 1 UP 5
-Elevator completed request at Sat Feb 03 17:04:22 EST 2024
+When running the Scheduler test case, the output should produce the following results:
 
-Request at Sat Feb 03 12:05:00 EST 2024 (3 -> 1) is being processed
-Elevator completed request at Sat Feb 03 17:04:22 EST 2024
+Scheduler is in the waiting state
+Request at Sat Feb 17 17:56:38 EST 2024 (1 -> 2) is being processed
+Scheduler is in the working state
+Elevator complete request at Sat Feb 17 17:56:38 EST 2024
+Scheduler is in the finished request state
+Scheduler is in the waiting state
 
-Request at Sat Feb 03 12:10:00 EST 2024 (2 -> 8) is being processed
-Elevator completed request at Sat Feb 03 17:04:22 EST 2024
-```
+When running the ElevatorSubsystem test case, the output should produce the following results:
+
 This shows the requests that were made, when they were completed based on the current time, and the output should have no errors. If the output has an error then the test has failed.
 
 ## Diagrams:
 
-The UML diagram can be found for this project can be found using the [link](Interation1ClassDiagram.png): 
+The UML diagram can be found for this project can be found using this [link](Interation1ClassDiagram.png): 
 
 The Sequence diagram for all the classes and functions can be found using this [link](SequenceDiagrams):
 
+The State Machine diagram for the ElevatorSubsytem and Scheduler can be found using this 
 
 
 

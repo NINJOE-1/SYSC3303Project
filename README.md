@@ -90,7 +90,7 @@ This shows the general layout that should be expected when running the simulatio
 
 ### Testing
 When running the Scheduler test case, the output should produce the following results:
-
+```
 Scheduler is in the waiting state
 Request at Sat Feb 17 17:56:38 EST 2024 (1 -> 2) is being processed
 Scheduler is in the working state
@@ -117,7 +117,7 @@ Elevator complete request at Sat Feb 17 12:00:41 EST 2024
 Scheduler is in the finished request state
 Elevator is in the dropping off passenger state
 Elevator is in the waiting state
-
+```
 This shows the requests that were made, when they were completed based on the current time, and the output should have no errors. If the output has an error then the test has failed.
 
 ## Diagrams:

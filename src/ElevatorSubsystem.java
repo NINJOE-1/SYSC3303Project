@@ -32,6 +32,10 @@ public class ElevatorSubsystem {
     static byte fByte = (byte) 15;
     static boolean requested = false;
 
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
+
     public enum ElevatorStateMachine {
         CurrentFloorWaiting {
             public ElevatorStateMachine nextState() {

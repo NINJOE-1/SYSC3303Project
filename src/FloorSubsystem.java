@@ -1,87 +1,85 @@
 /**
- * SYSC 3303 Elevator Project Iteration 1
+ * SYSC 3303 Elevator Project Iteration 3
  * Group 9
  *  Joseph Vretenar - 101234613
  *  Samuel Mauricla - 101233500
  *  Bhavaan Balasubramaniam - 101233825
- * Due Febuary 3rd 2024
- *
  *  File written by Joseph Vretenar
  */
 
 // import statements
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 /**
  * The type Floor subsystem.
  */
 // create class FloorSubsystem that implements Runnable
-public class FloorSubsystem implements Runnable {
-    private final Scheduler scheduler;
-    LinkedList<Event> data = new LinkedList<>();
+public class FloorSubsystem{
+    static byte zeroByte = (byte) 0;
+    LinkedList<Event> data;
 
-    /**
-     * Instantiates a new Floor subsystem.
-     *
-     * @param scheduler the scheduler
-     */
-    // create constructor that takes in a scheduler and reads data from a file
-    public FloorSubsystem(Scheduler scheduler) {
-
-        this.scheduler = scheduler;
-        readDataFromFile();
-    }
-
-    // create method readDataFromFile that reads data from a file and adds it to the data list
-    private void readDataFromFile() {
-        File inputFile = new File("inputFile.txt");
+    public static void main(String[] args) {
+        LinkedList<Event> data = Event.readDataFromFile();
         try {
-            Scanner reader = new Scanner(inputFile);
-            while (reader.hasNextLine()) {
-                String line = reader.nextLine();
-                String[] splitLine = line.split(" ");
-                Direction move = Direction.DOWN;
-                if (splitLine[2].equals("Up")) {
-                    move = Direction.UP;
+            DatagramSocket socket = new DatagramSocket();
+            InetAddress host = InetAddress.getLocalHost();
+            int port = 23;
+            while (true) {
+                while (!data.isEmpty()) {
+                    Event request = data.pop();
+                    byte[] requested = newRequest(request);
+                    DatagramPacket requestPacket = new DatagramPacket(requested, requested.length, host, port);
+                    socket.send(requestPacket);
+                    String strRequest = "";
+                    for (int i = 0; i < requested.length; i++){
+                        strRequest += Integer.toHexString(requested[i]);
+                    }
+                    System.out.println("Sent request: " + request + " as "+ strRequest);
+                    byte[] responseData = new byte[1];
+                    DatagramPacket responsePacket = new DatagramPacket(responseData, 1);
+                    socket.receive(responsePacket);
+                    if (responseData[0] == 15) {
+                        System.out.println("Received confirmation of completed Request\n");
+                    } else {
+                        System.out.println("Waiting for request confirmation");
+                    }
                 }
-                Date inputTime = new SimpleDateFormat("HH:mm:ss.SSS").parse(splitLine[0]);
-                Date date = new Date();
-                date.setHours(inputTime.getHours());
-                date.setMinutes(inputTime.getMinutes());
-                date.setSeconds(inputTime.getSeconds());
-                int currentFloor = Integer.parseInt(splitLine[1]);
-                int destinationFloor = Integer.parseInt(splitLine[3]);
-                data.add(new Event(date, currentFloor, move, destinationFloor));
             }
-            reader.close();
-        } catch (FileNotFoundException | NumberFormatException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    // create method run that runs the floorSubsystem
-    public synchronized void run() {
-        while (true) {
-            while (!data.isEmpty()) {
-
-                scheduler.addEvent(data.pop());
-
-            }
-            while (scheduler.isCompletedEmpty()) {
-                try {
-                    wait();
-                } catch (InterruptedException ignored) {
-
-                }
-            }
-            System.out.println(scheduler.getCompleted() + " has been completed!");
+    private static byte[] newRequest(Event request) {
+        byte[] output = new byte[10];
+        ByteBuffer buffer = ByteBuffer.wrap(output);
+        buffer.put(zeroByte);
+        byte hours = (byte) request.getTime().getHours();
+        byte mins = (byte) request.getTime().getMinutes();
+        byte secs = (byte) request.getTime().getSeconds();
+        byte from = (byte) request.getCurrentFloor();
+        byte to = (byte) request.getRequestedFloor();
+        byte direction;
+        if (request.getDirection() == Direction.UP) {
+            direction = (byte) 1;
+        } else {
+            direction = (byte) 0;
         }
+        buffer.put(hours);
+        buffer.put(mins);
+        buffer.put(secs);
+        buffer.put(zeroByte);
+        buffer.put(from);
+        buffer.put(zeroByte);
+        buffer.put(to);
+        buffer.put(zeroByte);
+        buffer.put(direction);
+        output = buffer.array();
+        return output;
     }
 }

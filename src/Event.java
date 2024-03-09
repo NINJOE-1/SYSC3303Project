@@ -10,8 +10,14 @@
  */
 
 // import statements
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 
 /**
@@ -20,9 +26,9 @@ import java.util.Date;
 // create class Event that implements Serializable
 public class Event implements Serializable {
     Direction move;
-    private final int currentFloor;
-    private final Date time;
-    private final int destinationFloor;
+    int currentFloor;
+    Date time;
+    int destinationFloor;
 
     /**
      * Instantiates a new Event.
@@ -38,6 +44,10 @@ public class Event implements Serializable {
         this.currentFloor = currentFloor;
         this.move = direction;
         this.destinationFloor = destinationFloor;
+    }
+
+    public Event() {
+
     }
 
     /**
@@ -78,6 +88,36 @@ public class Event implements Serializable {
     // create method getDirection that returns the direction
     public Direction getDirection() {
         return this.move;
+    }
+
+    public static LinkedList<Event> readDataFromFile() {
+        File inputFile = new File("inputFile.txt");
+        LinkedList<Event> data = null;
+        try {
+            data = new LinkedList<>();
+            Scanner reader = new Scanner(inputFile);
+            while (reader.hasNextLine()) {
+                String line = reader.nextLine();
+                String[] splitLine = line.split(" ");
+                Direction move = Direction.DOWN;
+                if (splitLine[2].equals("Up")) {
+                    move = Direction.UP;
+                }
+                Date inputTime = new SimpleDateFormat("HH:mm:ss.SSS").parse(splitLine[0]);
+                Date date = new Date();
+                date.setHours(inputTime.getHours());
+                date.setMinutes(inputTime.getMinutes());
+                date.setSeconds(inputTime.getSeconds());
+                int currentFloor = Integer.parseInt(splitLine[1]);
+                int destinationFloor = Integer.parseInt(splitLine[3]);
+                data.add(new Event(date, currentFloor, move, destinationFloor));
+            }
+            reader.close();
+            return data;
+        } catch (FileNotFoundException | NumberFormatException | ParseException e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 
     @Override

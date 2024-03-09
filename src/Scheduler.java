@@ -1,17 +1,18 @@
 /**
- * SYSC 3303 Elevator Project Iteration 1
+ * SYSC 3303 Elevator Project Iteration 3
  * Group 9
  *  Joseph Vretenar - 101234613
  *  Samuel Mauricla - 101233500
  *  Bhavaan Balasubramaniam - 101233825
- * Due Febuary 3rd 2024
- *
  *  File written by Joseph Vretenar
  */
 
 // import statements
-import java.util.Date;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.LinkedList;
+import static java.lang.Math.abs;
 
 /**
  * The type Scheduler.
@@ -19,8 +20,11 @@ import java.util.LinkedList;
 public class Scheduler {
     // create class Scheduler
     private static LinkedList<Event> requests = new LinkedList<>();
-    private final LinkedList<Event> completed = new LinkedList<>();
     schedulerStateMachine currentState = schedulerStateMachine.waiting;
+    static int elevator1Floor = 2;
+    static int elevator2Floor = 4;
+    static int serverPort = 69;
+    static int elevatorUsed;
 
     /**
      * Add event.
@@ -56,26 +60,6 @@ public class Scheduler {
         return r;
     }
 
-    /**
-     * Is completed empty boolean.
-     *
-     * @return the boolean
-     */
-    // create method isCompletedEmpty that returns true if the completed list is empty
-    public synchronized boolean isCompletedEmpty() {
-        return completed.isEmpty();
-    }
-
-    /**
-     * Gets completed.
-     *
-     * @return the completed
-     */
-    // create method getCompleted that returns the first request in the completed list
-    public synchronized Event getCompleted() {
-        return completed.pop();
-    }
-
     public enum schedulerStateMachine {
         waiting {
             public schedulerStateMachine nextState() {
@@ -105,34 +89,63 @@ public class Scheduler {
     }
 
     /**
-     * Complete.
-     *
-     * @param completionTime        the completion time
-     * @param currentFloor          the current floor
-     * @param visitedRequestedFloor the visited requested floor
-     */
-    // create method complete that takes in a completion time, current floor, and a boolean visitedRequestedFloor
-    public synchronized void complete(Date completionTime, int currentFloor, boolean visitedRequestedFloor) {
-        if (currentFloor == requests.peek().getRequestedFloor() && visitedRequestedFloor) {
-            System.out.println("Elevator complete request at " + completionTime.toString());
-            Event completedRequest = requests.pop();
-            completed.add(completedRequest);
-            notifyAll();
-            currentState = currentState.nextState();
-        }
-    }
-
-    /**
      * The entry point of application.
      *
      * @param args the input arguments
      */
     // create main method
     public static void main(String[] args) {
-        Scheduler scheduler = new Scheduler();
-        Thread floorThread = new Thread(new FloorSubsystem(scheduler));
-        Thread elevatorThread = new Thread(new ElevatorSubsystem(scheduler));
-        elevatorThread.start();
-        floorThread.start();
+        try {
+            DatagramSocket receiveSocket = new DatagramSocket(23);
+            DatagramSocket sendSocket = new DatagramSocket();
+
+            while (true) {
+                byte[] requestData = new byte[10];
+                DatagramPacket requestPacket = new DatagramPacket(requestData, requestData.length);
+                receiveSocket.receive(requestPacket);
+
+                String requestFloor = Integer.toHexString(requestData[5]);
+                System.out.println("Received request from floor subsystem on floor: " + requestFloor);
+
+                InetAddress serverAddress = InetAddress.getLocalHost();
+                if (abs(elevator1Floor - requestData[5]) > abs(elevator2Floor - requestData[5])) {
+                    serverPort = 70;
+                    elevatorUsed = 2;
+                } else {
+                    serverPort = 69;
+                    elevatorUsed = 1;
+                }
+
+                DatagramPacket forwardPacket = new DatagramPacket(requestData, requestData.length, serverAddress, serverPort);
+                String requestTime = Integer.toUnsignedString(requestData[1]) + ":" + Integer.toUnsignedString(requestData[2]) + ":" + Integer.toUnsignedString(requestData[3]);
+                System.out.println("Forwarding request to elevator subsystem at: " + requestTime);
+                sendSocket.send(forwardPacket);
+
+                byte[] responseData = new byte[4];
+                DatagramPacket responsePacket = new DatagramPacket(responseData, 4);
+                while (true) {
+                    sendSocket.receive(responsePacket);
+                    if (responseData[0] == 15) {
+                        String completionTime = Integer.toUnsignedString(responseData[1]) + ":" + Integer.toUnsignedString(responseData[2]) + ":" + Integer.toUnsignedString(responseData[3]);
+                        System.out.println("Received response from elevator subsystem at: " + completionTime);
+                        break;
+                    } else {
+                        if (responseData[1] == 1) {
+                            elevator1Floor = responseData[2];
+                        } else {
+                            elevator2Floor = responseData[2];
+                        }
+                    }
+                }
+
+                InetAddress clientAddress = requestPacket.getAddress();
+                int clientPort = requestPacket.getPort();
+                DatagramPacket confirmation = new DatagramPacket(responseData, 1, clientAddress, clientPort);
+                System.out.println("Confirming completion with floor subsystem\n");
+                receiveSocket.send(confirmation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

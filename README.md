@@ -10,25 +10,25 @@ Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and Floo
 Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
 Bhavaan Balasubramaniam - Wrote README.md, Created the State Machine Diagrams.<br>
 
-## Project Iteration 2: Adding the Scheduler and Elevator Subsystems
-The purpose of Iteration 2 is to implement State Machines for the Scheduler and Elevator Subsystems and assume that only 1 elevator is present. In addition, the Elevator Subsystem will notify the scheduler when an elevator reaches the floor.
+## Project Iteration 3: Multiple cars and System Distribution
+The purpose of Iteration 3 is to implement the UDP(User Datagram Packets) to communicate between 3 seperate programs. In addition, the subsytem has 2 cars.
 
 ## Files:
 ### [FloorSubsystem.java](src/FloorSubsystem.java)
 The Floor class will extract data from an input file and parses each line to create an 'Event' object.
-In addition, it will incorporate timestamps, the current floor, movement direction, and the destination floor. 
+In addition, it will incorporate timestamps, the current floor, movement direction, and the destination floor.
 
 ### [Scheduler.java](src/Scheduler.java)
-The Scheduler class is reponsible for managing elevator requests. 
-The requests are pending and completed requests. 
+The Scheduler class is reponsible for managing elevator requests.
+The requests are pending and completed requests.
 It consists of methods such as adding, processing, and completing events, ensuring there's thread-safe interactions.
 
 ### [Event.java](src/Event.java)
 The Event class is responsible for maintaing elevator-related events which consists of timestamp (time), current floor (currentFloor), movement direction (move), and requested destination floor (destinationFloor).
 
 ### [ElevatorSubsystem.java](src/ElevatorSubsystem.java)
-The Elevator Subsystem class is repsonsible for the elevator's movement and responses to scheduler events. 
-Some methods that are there include 'Runnable' which handles the Elevator's movements and tracks down the amount of passenger to drop and pick up. The 'move' method checks the floor movement and updates the current floor and progress regarding that. 
+The Elevator Subsystem class is repsonsible for the elevator's movement and responses to scheduler events.
+Some methods that are there include 'Runnable' which handles the Elevator's movements and tracks down the amount of passenger to drop and pick up. The 'move' method checks the floor movement and updates the current floor and progress regarding that.
 The 'run' method checks for accurate simulation of elevator movements and waiting periods.
 
 ### [Direction.java](src/Direction.java)
@@ -41,9 +41,9 @@ The constants represent the different possible number of states the Elevator is 
 2. Compile the Java files either using an IDE or through command lines
 3. Ensure that the input file is in the same Project folder
 4. To run the simulation, the files must be run in the following order:<br>
-    a. ElevatorSubsystem.java and ElevatorSubsystem2.java<br>
-    b. Scheduler.java<br>
-    c. FloorSubsystem.java<br>
+   a. ElevatorSubsystem.java and ElevatorSubsystem2.java<br>
+   b. Scheduler.java<br>
+   c. FloorSubsystem.java<br>
 
 To edit the floors and requests, edit the inputFile.txt file
 
@@ -51,7 +51,7 @@ To edit the floors and requests, edit the inputFile.txt file
 1. Open the project in your preferred IDE.
 2. Make sure JUnit is installed on your system. If not, download and install it.
 3. Make sure Jupiter is installed on your system. If not, download and install it.
-4. Run the 
+4. Run the ElevatorSubsystemTest.java file to test the ElevatorSubsystem class.
 
 ## Expected Output
 ### Simulation
@@ -157,7 +157,7 @@ This shows the requests that were made, when they were completed based on the cu
 
 ## Diagrams:
 
-The UML diagram can be found for this project can be found using this [link](Interation1ClassDiagram.png): 
+The UML diagram can be found for this project can be found using this [link](Interation1ClassDiagram.png):
 
 The Sequence diagram for all the classes and functions can be found using this [link](SequenceDiagrams):
 

@@ -1,4 +1,4 @@
-# SYSC 3303 Elevator Project Iteration 2
+# SYSC 3303 Elevator Project Iteration 3
 ## Group 9
 Joseph Vretenar 101234613<br>
 Samuel Mauricla - 101233500<br>
@@ -36,24 +36,14 @@ The Direction class consists of three constants UP,DOWN and IDLE.
 The constants represent the different possible number of states the Elevator is currently in.
 'Enum' represents what direction the floor is in or if its in an IDLE state.
 
-### [FloorSubsystemTest.java](src/FloorSubsystemTest.java)
-The Testing class is reponsible for testing the Scheduler and ElevatorSubsystem in an elevator simulation when running the program.
-The test is executed by passing in default values and simulates the event.
-Assertions are implemented to ensure the code is correct. 
-
-### 
-The SchedulerTest class will test the transitions through 'working' and 'finished' states when events are added, processed, and requests are completed.
-It will ensure the sample data displayed correctly.
-
-### 
-The ElevatorSubsystemTest class will ensure that the initial state of the ElevatorSubsystem is set to CurrentFloorWaiting.
-It will also ensure that the upon processing an event triggered by a Scheduler, the ElevatorSubsystem transitions to the MovingRequest state.
-
 ## Setup Instructions
 1. Ensure Java is installed on your system
 2. Compile the Java files either using an IDE or through command lines
 3. Ensure that the input file is in the same Project folder
-4. Run the simulation using the Scheduler class. [src/Scheduler.java]
+4. To run the simulation, the files must be run in the following order:<br>
+    a. ElevatorSubsystem.java and ElevatorSubsystem2.java<br>
+    b. Scheduler.java<br>
+    c. FloorSubsystem.java<br>
 
 To edit the floors and requests, edit the inputFile.txt file
 
@@ -61,32 +51,77 @@ To edit the floors and requests, edit the inputFile.txt file
 1. Open the project in your preferred IDE.
 2. Make sure JUnit is installed on your system. If not, download and install it.
 3. Make sure Jupiter is installed on your system. If not, download and install it.
-4. Run the FloorSubsystemTest file to run the test cases.
+4. Run the 
 
 ## Expected Output
 ### Simulation
-When running the simulation the output will be the following for the elevator moving from floor 1 -> 5:
+When running the simulation, the output should show up on four different console windows, each corresponding to the file that was run.
+The output for the ElevatorSubsystem should look like this:
 ```
-Elevator is in the waiting state
-Scheduler is in the waiting state
-Request at Sat Feb 17 12:00:00 EST 2024 (1 -> 5) is being processed
-Scheduler is in the working state
-Elevator is in the moving to request state
+Elevator is waiting at 2
+Elevator is moving to request floor
 Elevator has reached 1
-Elevator is in the arrived at request state
-Elevator is in the picking up passenger state
-Elevator is in the moving to destination state
+Elevator has arrived at the request floor
+Elevator is picking up passenger
+Elevator is moving to destination floor
 Elevator moved to floor 2
 Elevator moved to floor 3
 Elevator moved to floor 4
-Elevator has reached 5
-Elevator is in the arrived at destination state
-Elevator complete request at Sat Feb 17 12:00:41 EST 2024
-Scheduler is in the finished request state
-Elevator is in the dropping off passenger state
-Elevator is in the waiting state
+Elevator moved to floor 5
+Elevator has reached 6
+Elevator has arrived at destination
+Elevator is dropping off passenger
+Sending response time: 12:0:47 as fc02f
+
+Elevator is waiting at 6
+Elevator is moving to request floor
+Elevator moved to floor 5
+Elevator has reached 4
+Elevator has arrived at the request floor
+Elevator is picking up passenger
+Elevator is moving to destination floor
+Elevator moved to floor 3
+Elevator moved to floor 2
+Elevator has reached 1
+Elevator has arrived at destination
+Elevator is dropping off passenger
+Sending response time: 12:3:35 as fc323
 ```
-This shows the general layout that should be expected when running the simulation. The elevator will move to the floor that the button was pressed on, pick up the passengers, then move to the floor for the button they pressed in the elevator, once the elevator has reached the floor, it will drop off the passengers and complete the request.
+The output for the Scheduler should look like this:
+```Received request from floor subsystem on floor: 1
+Forwarding request to elevator subsystem at: 12:0:0
+Received response from elevator subsystem at: 12:0:47
+Confirming completion with floor subsystem
+
+Received request from floor subsystem on floor: 3
+Forwarding request to elevator subsystem at: 12:1:0
+Received response from elevator subsystem at: 12:1:29
+Confirming completion with floor subsystem
+
+Received request from floor subsystem on floor: 2
+Forwarding request to elevator subsystem at: 12:2:0
+Received response from elevator subsystem at: 12:2:53
+Confirming completion with floor subsystem
+
+Received request from floor subsystem on floor: 4
+Forwarding request to elevator subsystem at: 12:3:0
+Received response from elevator subsystem at: 12:3:35
+Confirming completion with floor subsystem
+```
+The Output for the FloorSubsystem should look like this:
+```
+Sent request: Sat Mar 09 12:00:00 EST 2024 1 UP 6 as 0c00010601
+Received confirmation of completed Request
+
+Sent request: Sat Mar 09 12:01:00 EST 2024 3 DOWN 1 as 0c10030100
+Received confirmation of completed Request
+
+Sent request: Sat Mar 09 12:02:00 EST 2024 2 UP 8 as 0c20020801
+Received confirmation of completed Request
+
+Sent request: Sat Mar 09 12:03:00 EST 2024 4 DOWN 1 as 0c30040100
+Received confirmation of completed Request
+```
 
 ### Testing
 When running the Scheduler test case, the output should produce the following results:

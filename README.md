@@ -24,7 +24,7 @@ The requests are pending and completed requests.
 It consists of methods such as adding, processing, and completing events, ensuring there's thread-safe interactions.
 
 ### [Event.java](src/Event.java)
-The Event class is responsible for maintaing elevator- related events which consists of timestamp (time), current floor (currentFloor), movement direction (move), and requested destination floor (destinationFloor).
+The Event class is responsible for maintaing elevator-related events which consists of timestamp (time), current floor (currentFloor), movement direction (move), and requested destination floor (destinationFloor).
 
 ### [ElevatorSubsystem.java](src/ElevatorSubsystem.java)
 The Elevator Subsystem class is repsonsible for the elevator's movement and responses to scheduler events. 

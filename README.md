@@ -10,8 +10,8 @@ Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and Floo
 Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
 Bhavaan Balasubramaniam - Wrote README.md, Created the State Machine Diagrams.<br>
 
-## Project Iteration 2: Adding the Scheduler and Elevator Subsystems
-The purpose of Iteration 2 is to implement State Machines for the Scheduler and Elevator Subsystems and assume that only 1 elevator is present. In addition, the Elevator Subsystem will notify the scheduler when an elevator reaches the floor.
+## Project Iteration 3: Multiple cars and System Distribution
+The purpose of Iteration 3 is to implement the UDP(User Datagram Packets) to communicate between 3 seperate programs. In addition, the subsytem has 2 cars.
 
 ## Files:
 ### [FloorSubsystem.java](src/FloorSubsystem.java)

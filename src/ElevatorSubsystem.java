@@ -188,7 +188,7 @@ public class ElevatorSubsystem {
             e.printStackTrace();
         }
     }
-    private static byte[] response(Calendar c) throws IOException {
+    private static byte[] response(Calendar c) {
         byte[] output = new byte[4];
         ByteBuffer buffer = ByteBuffer.wrap(output);
         buffer.put(fByte);

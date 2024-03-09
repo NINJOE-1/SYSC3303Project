@@ -21,7 +21,6 @@ import java.util.LinkedList;
 // create class FloorSubsystem that implements Runnable
 public class FloorSubsystem{
     static byte zeroByte = (byte) 0;
-    LinkedList<Event> data;
 
     public static void main(String[] args) {
         LinkedList<Event> data = Event.readDataFromFile();

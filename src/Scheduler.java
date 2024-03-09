@@ -26,40 +26,6 @@ public class Scheduler {
     static int serverPort = 69;
     static int elevatorUsed;
 
-    /**
-     * Add event.
-     *
-     * @param r the r
-     */
-    // create method addEvent that takes in an event and adds it to the requests list
-    public synchronized void addEvent(Event r) {
-        requests.add(r);
-        if (currentState.equals(Scheduler.schedulerStateMachine.waiting)) {
-            currentState = currentState.nextState();
-        }
-        notifyAll();
-    };
-
-    /**
-     * Process event.
-     *
-     * @return the event
-     */
-    // create method processEvent that returns the first request in the list
-    public synchronized Event processEvent() {
-        while(requests.peek()==null) {
-            try {
-                wait();
-            }catch(InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        Event r = requests.peek();
-        System.out.println("Request at " + r.getTime().toString() + " (" + r.getCurrentFloor() + " -> " + r.getRequestedFloor() + ") is being processed");
-        currentState = currentState.nextState();
-        return r;
-    }
-
     public enum schedulerStateMachine {
         waiting {
             public schedulerStateMachine nextState() {

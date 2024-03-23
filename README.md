@@ -6,12 +6,12 @@ Bhavaan Balasubramaniam - 101233825
 
 ## Breakdown of the tasks:
 
-Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem.<br>
+Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem,Created the Timing Diagrams.<br>
 Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
-Bhavaan Balasubramaniam - Wrote README.md, Created the State Machine Diagrams.<br>
+Bhavaan Balasubramaniam - Wrote README.md, reviewed the Timing Diagram.<br>
 
-## Project Iteration 3: Multiple cars and System Distribution
-The purpose of Iteration 3 is to implement the UDP(User Datagram Packets) to communicate between 3 seperate programs. In addition, the subsytem has 2 cars.
+## Project Iteration 4 : Adding Error detection and correction
+The purpose of Iteration 4 was to implement fault detection and handling faults. As well as, to implement timing events to measure for potential faults that could occur during the execution of the program. 
 
 ## Files:
 ### [FloorSubsystem.java](src/FloorSubsystem.java)
@@ -30,6 +30,7 @@ The Event class is responsible for maintaing elevator-related events which consi
 The Elevator Subsystems class is repsonsible for the elevator's movement and responses to scheduler events.
 Some methods that are there include 'Runnable' which handles the Elevator's movements and tracks down the amount of passenger to drop and pick up. The 'move' method checks the floor movement and updates the current floor and progress regarding that.
 The 'run' method checks for accurate simulation of elevator movements and waiting periods.
+It ensures for fault detection and handling within the program.
 
 ### [Direction.java](src/Direction.java)
 The Direction class consists of three constants UP,DOWN and IDLE.
@@ -133,13 +134,36 @@ Elevator 1 is taking too long to close doors, potential error
 ```
 This shows the requests that were made, when they were completed based on the current time, and the output should have no errors. If the output has an error then the test has failed.
 
+## Timing Diagrams:
+There were 3 possible scenarios for Timing Diagrams: 
+Terminologies: 
+1.) Status- Checks for Fault Detection
+2.) Opening - Checks the time for doors to open
+3.) Closing - Checks the time for doors to close
+4.) Moving - Checks the time for elevators to traverse through different floors
+*Refer to Diagrams -> Timing Diagrams for the terms and output of the diagram
+
+### Doors stuck
+The purpose of this scenario will measure the time it takes for an elevator to open and close its doors within 1 full duration. More specifically,
+the time it takes to open doors is 4 seconds, it takes 3 seconds for the doors to close. Status which checks for fault detection will have 1 second drop when a fault occurs.
+
+## Elevator doors getting stuck
+The purpose of this scenario is to measure the time it takes for the doors to be stuck when opened or closed. As previously mentioned in the scenario above, the diagrams does not change as it measures the time it takes to have doors open and close.
+
+### Elevators moving getting stuck 
+The purpose of this scenario is to measure the time it takes for an elevator to traverse through floors and getting stuck during that process. More specifically, it would measure the status which would ensure a drop of 1 after 12s to check for faults. As well as, moving takes 5 seconds for it to traverse through different floors in an elevator. 
+
+
+
 ## Diagrams:
 
-The UML diagram can be found for this project can be found using this [link](Interation1ClassDiagram.png):
+The UML diagram for this project can be found using this [link](Interation1ClassDiagram.png):
 
 The Sequence diagram for all the classes and functions can be found using this [link](SequenceDiagrams):
 
 The State Machine diagram for the ElevatorSubsytem and Scheduler can be found using this [link](StateMachineDiagrams):
+
+The Timing Diagrams for this project can be found using this 
 
 
 

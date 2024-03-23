@@ -8,9 +8,8 @@
  */
 
 // import statements
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.IOException;
+import java.net.*;
 import java.util.LinkedList;
 import static java.lang.Math.abs;
 
@@ -21,10 +20,12 @@ public class Scheduler {
     // create class Scheduler
     private static LinkedList<Event> requests = new LinkedList<>();
     schedulerStateMachine currentState = schedulerStateMachine.waiting;
-    static int elevator1Floor = 2;
-    static int elevator2Floor = 4;
-    static int serverPort = 69;
-    static int elevatorUsed;
+    static int[] elevatorFloors = {1, 2, 3, 4};
+    static int[] elevatorUsed = {0, 0, 0, 0};
+    static int serverPort = 68;
+    static InetAddress clientAddress;
+    static int clientPort;
+    static long[] startTime = new long[4];
 
     public enum schedulerStateMachine {
         waiting {
@@ -54,6 +55,24 @@ public class Scheduler {
         public abstract schedulerStateMachine nextState();
     }
 
+    private static int selectElevator(int requestFloor) {
+        int elevator1Distance = abs(elevatorFloors[0] - requestFloor);
+        int elevator2Distance = abs(elevatorFloors[1] - requestFloor);
+        int elevator3Distance = abs(elevatorFloors[2] - requestFloor);
+        int elevator4Distance = abs(elevatorFloors[3] - requestFloor);
+        if (((elevator1Distance == 0) || (elevator1Distance < elevator2Distance && elevator1Distance < elevator3Distance && elevator1Distance < elevator4Distance)) && elevatorUsed[0] == 0) {
+            return 1;
+        } else if (((elevator2Distance == 0) || (elevator2Distance < elevator1Distance && elevator2Distance < elevator3Distance && elevator2Distance < elevator4Distance)) && elevatorUsed[1] == 0) {
+            return 2;
+        } else if (((elevator3Distance == 0) || (elevator3Distance < elevator1Distance && elevator3Distance < elevator2Distance && elevator3Distance < elevator4Distance)) && elevatorUsed[2] == 0) {
+            return 3;
+        } else if (elevatorUsed[3] == 0){
+            return 4;
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * The entry point of application.
      *
@@ -64,51 +83,68 @@ public class Scheduler {
         try {
             DatagramSocket receiveSocket = new DatagramSocket(23);
             DatagramSocket sendSocket = new DatagramSocket();
-
             while (true) {
                 byte[] requestData = new byte[10];
                 DatagramPacket requestPacket = new DatagramPacket(requestData, requestData.length);
-                receiveSocket.receive(requestPacket);
+                receive : try {
+                    receiveSocket.setSoTimeout(1000);
+                    receiveSocket.receive(requestPacket);
+                    clientAddress = requestPacket.getAddress();
+                    clientPort = requestPacket.getPort();
+                    String requestFloor = Integer.toHexString(requestData[5]);
+                    System.out.println("Received request from floor subsystem on floor: " + requestFloor);
 
-                String requestFloor = Integer.toHexString(requestData[5]);
-                System.out.println("Received request from floor subsystem on floor: " + requestFloor);
+                    InetAddress serverAddress = InetAddress.getLocalHost();
+                    int selection = selectElevator(requestData[5]);
+                    elevatorUsed[selection - 1] = 1;
+                    serverPort = 68 + selection;
 
-                InetAddress serverAddress = InetAddress.getLocalHost();
-                if (abs(elevator1Floor - requestData[5]) > abs(elevator2Floor - requestData[5])) {
-                    serverPort = 70;
-                    elevatorUsed = 2;
-                } else {
-                    serverPort = 69;
-                    elevatorUsed = 1;
+                    DatagramPacket forwardPacket = new DatagramPacket(requestData, requestData.length, serverAddress, serverPort);
+                    String requestTime = Integer.toUnsignedString(requestData[1]) + ":" + Integer.toUnsignedString(requestData[2]) + ":" + Integer.toUnsignedString(requestData[3]);
+                    System.out.println("Forwarding request to elevator subsystem at: " + requestTime);
+                    sendSocket.send(forwardPacket);
+                    startTime[selection - 1] = System.currentTimeMillis();
+                } catch (SocketTimeoutException e) {
+                    break receive;
                 }
 
-                DatagramPacket forwardPacket = new DatagramPacket(requestData, requestData.length, serverAddress, serverPort);
-                String requestTime = Integer.toUnsignedString(requestData[1]) + ":" + Integer.toUnsignedString(requestData[2]) + ":" + Integer.toUnsignedString(requestData[3]);
-                System.out.println("Forwarding request to elevator subsystem at: " + requestTime);
-                sendSocket.send(forwardPacket);
-
-                byte[] responseData = new byte[4];
-                DatagramPacket responsePacket = new DatagramPacket(responseData, 4);
-                while (true) {
-                    sendSocket.receive(responsePacket);
-                    if (responseData[0] == 15) {
-                        String completionTime = Integer.toUnsignedString(responseData[1]) + ":" + Integer.toUnsignedString(responseData[2]) + ":" + Integer.toUnsignedString(responseData[3]);
-                        System.out.println("Received response from elevator subsystem at: " + completionTime);
-                        break;
-                    } else {
-                        if (responseData[1] == 1) {
-                            elevator1Floor = responseData[2];
+                byte[] responseData = new byte[5];
+                DatagramPacket responsePacket = new DatagramPacket(responseData, 5);
+                elevator : try {
+                    for (int i = 0; i < 5; i++) {
+                        serverPort = 69 + i;
+                        sendSocket.setSoTimeout(1000);
+                        sendSocket.receive(responsePacket);
+                        if (responseData[0] == 15) {
+                            elevatorUsed[i] = 0;
+                            String completionTime = Integer.toUnsignedString(responseData[1]) + ":" + Integer.toUnsignedString(responseData[2]) + ":" + Integer.toUnsignedString(responseData[3]);
+                            System.out.println("Received response from elevator subsystem at: " + completionTime);
+                            DatagramPacket confirmation = new DatagramPacket(responseData, 5, clientAddress, clientPort);
+                            System.out.println("Confirming completion with floor subsystem");
+                            receiveSocket.send(confirmation);
                         } else {
-                            elevator2Floor = responseData[2];
+                            if (responseData[0] == 0) {
+                                if (System.currentTimeMillis() - startTime[responseData[1] - 1] > 12000) {
+                                    System.out.println("Elevator " + Integer.toUnsignedString(responseData[1]) + " is taking too long to close doors, potential error");
+                                    byte[] error = {2, responseData[1], 0, 0, 0};
+                                    DatagramPacket confirmation = new DatagramPacket(error, error.length, clientAddress, clientPort);
+                                    receiveSocket.send(confirmation);
+                                }
+                                startTime[responseData[1] - 1] = System.currentTimeMillis();
+                            } else {
+                                if (System.currentTimeMillis() - startTime[responseData[1] - 1] > 20000) {
+                                    System.out.println("Elevator " + Integer.toUnsignedString(responseData[1]) + " is taking too long to close doors, potential error");
+                                    byte[] error = {2, responseData[1], 0, 0, 0};
+                                    DatagramPacket confirmation = new DatagramPacket(error, error.length, clientAddress, clientPort);
+                                    receiveSocket.send(confirmation);
+                                }
+                                startTime[responseData[1] - 1] = System.currentTimeMillis();
+                            }
                         }
                     }
+                } catch (SocketTimeoutException e) {
+                    break elevator;
                 }
-
-                InetAddress clientAddress = requestPacket.getAddress();
-                int clientPort = requestPacket.getPort();
-                DatagramPacket confirmation = new DatagramPacket(responseData, 1, clientAddress, clientPort);
-                System.out.println("Confirming completion with floor subsystem\n");
-                receiveSocket.send(confirmation);
             }
         } catch (Exception e) {
             e.printStackTrace();

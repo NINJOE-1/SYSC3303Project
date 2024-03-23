@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
+
 import static java.lang.Math.abs;
 import static java.lang.Thread.sleep;
 
@@ -22,18 +23,23 @@ import static java.lang.Thread.sleep;
  * The type ElevatorSubsystem.
  */
 // create class elevatorSubsystem that implements Runnable
-public class ElevatorSubsystem2 {
-    private static int currentFloor = 4;
-    static ElevatorStateMachine currentState = ElevatorStateMachine.CurrentFloorWaiting;
-    static InetAddress clientAddress;
-    static int clientPort;
+public class ElevatorSubsystems {
+    private int currentFloor;
+    private ElevatorStateMachine currentState = ElevatorStateMachine.CurrentFloorWaiting;
+    private InetAddress clientAddress;
+    private int clientPort;
     static byte zeroByte = (byte) 0;
-    static byte twoByte = (byte) 2;
     static byte fByte = (byte) 15;
-    static boolean requested = false;
+    private final String ElevatorName;
+    private final int port;
+    private byte elevatorByte = 0;
 
-    public int getCurrentFloor() {
-        return currentFloor;
+    public ElevatorSubsystems(int currentFloor, String ElevatorName, int port) {
+        this.currentFloor = currentFloor;
+        this.ElevatorName = ElevatorName;
+        this.port = port;
+        this.elevatorByte = (byte) (port-68);
+        System.out.println(ElevatorName + " is waiting at " + currentFloor);
     }
 
     public enum ElevatorStateMachine {
@@ -71,39 +77,21 @@ public class ElevatorSubsystem2 {
 
 
     // create method move that takes in the current floor, direction, and desired floor
-    private static void move(Direction d, int desiredFloor, DatagramSocket socket) throws InterruptedException, IOException {
-        if (currentFloor == desiredFloor) {
-            System.out.println("Elevator has reached " + currentFloor);
-        } else if (d == Direction.UP) {
-            while (currentFloor < desiredFloor) {
-                sleep(600);
-                currentFloor++;
-                byte[] sendFloor = floor(currentFloor);
-                DatagramPacket sendFloorPacket = new DatagramPacket(sendFloor, sendFloor.length, clientAddress, clientPort);
-                socket.send(sendFloorPacket);
-                if (currentFloor < desiredFloor)
-                    System.out.println("Elevator moved to floor " + currentFloor);
-                else
-                    System.out.println("Elevator has reached " + desiredFloor);
-            }
-        } else if (d == Direction.DOWN) {
-            while (currentFloor > desiredFloor) {
-                sleep(600);
-                currentFloor--;
-                byte[] sendFloor = floor(currentFloor);
-                DatagramPacket sendFloorPacket = new DatagramPacket(sendFloor, sendFloor.length, clientAddress, clientPort);
-                socket.send(sendFloorPacket);
-                if (currentFloor > desiredFloor)
-                    System.out.println("Elevator moved to floor " + currentFloor);
-                else
-                    System.out.println("Elevator has reached " + desiredFloor);
-            }
-        }
+    private void move(Direction d, DatagramSocket socket) throws InterruptedException, IOException {
+        Thread.sleep(6000);
+        if (d == Direction.UP)
+            currentFloor++;
+        else if (d == Direction.DOWN)
+            currentFloor--;
+        byte[] sendFloor = floor(currentFloor);
+        DatagramPacket sendFloorPacket = new DatagramPacket(sendFloor, sendFloor.length, clientAddress, clientPort);
+        socket.send(sendFloorPacket);
+        System.out.println(ElevatorName + " moved to floor " + currentFloor);
     }
 
-    public static void main(String[] args) {
+    public void runSubsystem() {
         try {
-            DatagramSocket socket = new DatagramSocket(70);
+            DatagramSocket socket = new DatagramSocket(port);
 
             while (true) {
                 byte[] requestData = new byte[10];
@@ -124,65 +112,70 @@ public class ElevatorSubsystem2 {
                 } else {
                     request.move = Direction.DOWN;
                 }
-                requested = true;
+                boolean requested = true;
                 while(requested) {
+                    boolean newRequest = false;
                     switch (currentState) {
                         case CurrentFloorWaiting: {
-                            System.out.println("Elevator is waiting at " + currentFloor);
                             currentState = currentState.nextState();
                             break;
                         }
 
                         case MovingRequest: {
-                            System.out.println("Elevator is moving to request floor");
-                            if (currentFloor > request.currentFloor) {
-                                move(Direction.DOWN, request.currentFloor, socket);
-                            } else if (currentFloor < request.currentFloor) {
-                                move(Direction.UP, request.currentFloor, socket);
+                            System.out.println(ElevatorName + " is moving to request floor");
+                            if (currentFloor == request.currentFloor) {
+                                currentState = currentState.nextState();
+                            } else while (currentFloor != request.currentFloor && !newRequest) {
+                                if (currentFloor > request.currentFloor)
+                                    move(Direction.DOWN, socket);
+                                else
+                                    move(Direction.UP, socket);
                             }
-                            currentState = currentState.nextState();
                             break;
                         }
 
                         case PickUpPassenger: {
-                            System.out.println("Elevator has arrived at the request floor");
-                            System.out.println("Elevator is picking up passenger");
-                            sleep(1200);
+                            System.out.println(ElevatorName + " has arrived at the request floor");
+                            System.out.println(ElevatorName + " is picking up passenger");
+                            sleep(12000);
+                            byte[] updateScheduler = {1, (byte) (port - 68), 0, 0, 0};
+                            DatagramPacket sendFloorPacket = new DatagramPacket(updateScheduler, updateScheduler.length, clientAddress, clientPort);
+                            socket.send(sendFloorPacket);
                             currentState = currentState.nextState();
                             break;
                         }
 
                         case MovingDestination: {
-                            System.out.println("Elevator is moving to destination floor");
-                            move(request.getDirection(), request.getRequestedFloor(), socket);
+                            System.out.println(ElevatorName + " is moving to destination floor");
+                            while (currentFloor != request.destinationFloor && !newRequest) {
+                                move(request.move, socket);
+                            }
                             currentState = currentState.nextState();
                             break;
                         }
 
                         case DropOffPassenger: {
-                            System.out.println("Elevator has arrived at destination");
-                            System.out.println("Elevator is dropping off passenger");
+                            System.out.println(ElevatorName + " has arrived at destination");
+                            System.out.println(ElevatorName + " is dropping off passenger");
                             Calendar c = Calendar.getInstance();
                             c.setTime(time);
                             int movingTime = abs(currentFloor - request.getRequestedFloor()) * 6;
                             int waitingTime = 17;
                             int movingTime2 = abs(currentFloor - request.getCurrentFloor()) * 6;
                             c.add(Calendar.SECOND, (movingTime + waitingTime + movingTime2));
-                            sleep(1200);
+                            sleep(12000);
                             byte[] response = response(c);
                             DatagramPacket responsePacket = new DatagramPacket(response, response.length, clientAddress, clientPort);
                             String responseTime = Integer.toUnsignedString(response[1]) + ":" + Integer.toUnsignedString(response[2]) + ":" + Integer.toUnsignedString(response[3]);
-                            String strResponse = "";
-                            for (int i = 0; i < response.length; i++){
-                                strResponse += Integer.toHexString(response[i]);
+                            StringBuilder strResponse = new StringBuilder();
+                            for (byte b : response) {
+                                strResponse.append(Integer.toHexString(b));
                             }
-                            for (int i = 0; i < response.length; i++) {
-
-                            }
-                            System.out.println("Sending response time: " + responseTime + " as " + strResponse + "\n");
+                            System.out.println("Sending response time: " + responseTime + " as " + strResponse);
                             socket.send(responsePacket);
                             currentState = currentState.nextState();
                             requested = false;
+                            System.out.println(ElevatorName + " is waiting at " + currentFloor + "\n");
                             break;
                         }
                     }
@@ -192,28 +185,42 @@ public class ElevatorSubsystem2 {
             e.printStackTrace();
         }
     }
-    private static byte[] response(Calendar c) {
-        byte[] output = new byte[4];
+    private byte[] response(Calendar c) {
+        byte[] output = new byte[5];
         ByteBuffer buffer = ByteBuffer.wrap(output);
         buffer.put(fByte);
         byte hours = (byte) c.getTime().getHours();
         byte mins = (byte) c.getTime().getMinutes();
         byte secs = (byte) c.getTime().getSeconds();
+        byte elevator = (byte) (port - 68);
         buffer.put(hours);
         buffer.put(mins);
         buffer.put(secs);
+        buffer.put(elevator);
         output = buffer.array();
         return output;
     }
 
-    private static byte[] floor(int floor) {
+    private byte[] floor(int floor) {
         byte[] output = new byte[4];
         ByteBuffer buffer = ByteBuffer.wrap(output);
         buffer.put(zeroByte);
-        buffer.put(twoByte);
+        buffer.put(elevatorByte);
         buffer.put((byte) floor);
         buffer.put(zeroByte);
         output = buffer.array();
         return output;
+    }
+
+    public static void main(String[] args) {
+        ElevatorSubsystems elevator1 = new ElevatorSubsystems(1, "Elevator 1", 69);
+        ElevatorSubsystems elevator2 = new ElevatorSubsystems(2, "Elevator 2", 70);
+        ElevatorSubsystems elevator3 = new ElevatorSubsystems(3, "Elevator 3", 71);
+        ElevatorSubsystems elevator4 = new ElevatorSubsystems(4, "Elevator 4", 72);
+
+        new Thread(elevator1::runSubsystem).start();
+        new Thread(elevator2::runSubsystem).start();
+        new Thread(elevator3::runSubsystem).start();
+        new Thread(elevator4::runSubsystem).start();
     }
 }

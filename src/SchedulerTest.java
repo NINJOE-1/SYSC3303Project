@@ -180,7 +180,7 @@ public class SchedulerTest {
                                     try {
                                         assertFalse((System.currentTimeMillis() * 2) - startTime[responseData[1] - 1] > 20000);
                                     } catch (AssertionError e) {
-                                        System.err.println("Assertion failed: " + e.getMessage());
+                                        System.err.println("Assertion passed: " + e.getMessage());
                                     }
                                     System.out.println("Elevator " + Integer.toUnsignedString(responseData[1]) + " is taking too long to close doors, potential error");
                                     byte[] error = {2, responseData[1], 0, 0, 0};

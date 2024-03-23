@@ -8,7 +8,6 @@
  */
 
 // import statements
-import java.io.IOException;
 import java.net.*;
 import java.util.LinkedList;
 import static java.lang.Math.abs;
@@ -19,15 +18,42 @@ import static java.lang.Math.abs;
 public class Scheduler {
     // create class Scheduler
     private static LinkedList<Event> requests = new LinkedList<>();
+    /**
+     * The Current state.
+     */
     schedulerStateMachine currentState = schedulerStateMachine.waiting;
+    /**
+     * The Elevator floors.
+     */
     static int[] elevatorFloors = {1, 2, 3, 4};
+    /**
+     * The Elevator used.
+     */
     static int[] elevatorUsed = {0, 0, 0, 0};
+    /**
+     * The Server port.
+     */
     static int serverPort = 68;
+    /**
+     * The Client address.
+     */
     static InetAddress clientAddress;
+    /**
+     * The Client port.
+     */
     static int clientPort;
+    /**
+     * The Start time.
+     */
     static long[] startTime = new long[4];
 
+    /**
+     * The enum Scheduler state machine.
+     */
     public enum schedulerStateMachine {
+        /**
+         * The Waiting.
+         */
         waiting {
             public schedulerStateMachine nextState() {
                 System.out.println("Scheduler is in the waiting state");
@@ -35,6 +61,9 @@ public class Scheduler {
             }
         },
 
+        /**
+         * The Working.
+         */
         working {
             public schedulerStateMachine nextState() {
                 System.out.println("Scheduler is in the working state");
@@ -42,6 +71,9 @@ public class Scheduler {
             }
         },
 
+        /**
+         * The Finished.
+         */
         finished {
             public schedulerStateMachine nextState() {
                 System.out.println("Scheduler is in the finished request state");
@@ -52,6 +84,12 @@ public class Scheduler {
                 }
             }
         };
+
+        /**
+         * Next state scheduler state machine.
+         *
+         * @return the scheduler state machine
+         */
         public abstract schedulerStateMachine nextState();
     }
 
@@ -78,7 +116,7 @@ public class Scheduler {
      *
      * @param args the input arguments
      */
-    // create main method
+// create main method
     public static void main(String[] args) {
         try {
             DatagramSocket receiveSocket = new DatagramSocket(23);

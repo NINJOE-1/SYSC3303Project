@@ -15,7 +15,16 @@
  */
 // create enum Direction with values UP, DOWN, and IDLE
 public enum Direction {
+    /**
+     * Up direction.
+     */
     UP,
+    /**
+     * Down direction.
+     */
     DOWN,
+    /**
+     * Idle direction.
+     */
     IDLE
 }

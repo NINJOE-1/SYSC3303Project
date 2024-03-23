@@ -25,9 +25,21 @@ import java.util.Scanner;
  */
 // create class Event that implements Serializable
 public class Event implements Serializable {
+    /**
+     * The Move.
+     */
     Direction move;
+    /**
+     * The Current floor.
+     */
     int currentFloor;
+    /**
+     * The Time.
+     */
     Date time;
+    /**
+     * The Destination floor.
+     */
     int destinationFloor;
 
     /**
@@ -38,7 +50,7 @@ public class Event implements Serializable {
      * @param direction        the direction
      * @param destinationFloor the destination floor
      */
-    // create constructor that takes in time, current floor, direction, and destination floor
+// create constructor that takes in time, current floor, direction, and destination floor
     public Event(Date time, int currentFloor, Direction direction, int destinationFloor) {
         this.time = time;
         this.currentFloor = currentFloor;
@@ -46,6 +58,9 @@ public class Event implements Serializable {
         this.destinationFloor = destinationFloor;
     }
 
+    /**
+     * Instantiates a new Event.
+     */
     public Event() {
 
     }
@@ -55,7 +70,7 @@ public class Event implements Serializable {
      *
      * @return the time
      */
-    // create method getTime that returns the time
+// create method getTime that returns the time
     public Date getTime() {
         return this.time;
     }
@@ -65,7 +80,7 @@ public class Event implements Serializable {
      *
      * @return the current floor
      */
-    // create method getCurrentFloor that returns the current floor
+// create method getCurrentFloor that returns the current floor
     public int getCurrentFloor() {
         return this.currentFloor;
     }
@@ -75,7 +90,7 @@ public class Event implements Serializable {
      *
      * @return the requested floor
      */
-    // create method getRequestedFloor that returns the destination floor
+// create method getRequestedFloor that returns the destination floor
     public int getRequestedFloor() {
         return this.destinationFloor;
     }
@@ -85,11 +100,16 @@ public class Event implements Serializable {
      *
      * @return the direction
      */
-    // create method getDirection that returns the direction
+// create method getDirection that returns the direction
     public Direction getDirection() {
         return this.move;
     }
 
+    /**
+     * Read data from file linked list.
+     *
+     * @return the linked list
+     */
     public static LinkedList<Event> readDataFromFile() {
         File inputFile = new File("inputFile.txt");
         LinkedList<Event> data = null;

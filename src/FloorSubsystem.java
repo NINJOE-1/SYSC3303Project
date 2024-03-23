@@ -23,9 +23,21 @@ import java.util.concurrent.TimeUnit;
  */
 // create class FloorSubsystem that implements Runnable
 public class FloorSubsystem{
+    /**
+     * The Zero byte.
+     */
     static byte zeroByte = (byte) 0;
+    /**
+     * The Num requests.
+     */
     static int numRequests = 0;
+    /**
+     * The Finished requests.
+     */
     static int finishedRequests = 0;
+    /**
+     * The Delay.
+     */
     static long delay;
 
     private static Runnable sendRequest(Event request, DatagramSocket socket, InetAddress host, int port) throws IOException {
@@ -40,6 +52,12 @@ public class FloorSubsystem{
         return null;
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws IOException the io exception
+     */
     public static void main(String[] args) throws IOException {
         LinkedList<Event> data = Event.readDataFromFile();
         LocalTime currentTime = LocalTime.now();

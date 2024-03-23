@@ -28,12 +28,25 @@ public class ElevatorSubsystems {
     private ElevatorStateMachine currentState = ElevatorStateMachine.CurrentFloorWaiting;
     private InetAddress clientAddress;
     private int clientPort;
+    /**
+     * The Zero byte.
+     */
     static byte zeroByte = (byte) 0;
+    /**
+     * The F byte.
+     */
     static byte fByte = (byte) 15;
     private final String ElevatorName;
     private final int port;
     private byte elevatorByte = 0;
 
+    /**
+     * Instantiates a new Elevator subsystems.
+     *
+     * @param currentFloor the current floor
+     * @param ElevatorName the elevator name
+     * @param port         the port
+     */
     public ElevatorSubsystems(int currentFloor, String ElevatorName, int port) {
         this.currentFloor = currentFloor;
         this.ElevatorName = ElevatorName;
@@ -42,36 +55,60 @@ public class ElevatorSubsystems {
         System.out.println(ElevatorName + " is waiting at " + currentFloor);
     }
 
+    /**
+     * The enum Elevator state machine.
+     */
     public enum ElevatorStateMachine {
+        /**
+         * The Current floor waiting.
+         */
         CurrentFloorWaiting {
             public ElevatorStateMachine nextState() {
                 return MovingRequest;
             }
         },
 
+        /**
+         * The Moving request.
+         */
         MovingRequest {
             public ElevatorStateMachine nextState() {
                 return PickUpPassenger;
             }
         },
 
+        /**
+         * The Pick up passenger.
+         */
         PickUpPassenger {
             public ElevatorStateMachine nextState() {
                 return MovingDestination;
             }
         },
 
+        /**
+         * The Moving destination.
+         */
         MovingDestination {
             public ElevatorStateMachine nextState() {
                 return DropOffPassenger;
             }
         },
 
+        /**
+         * The Drop off passenger.
+         */
         DropOffPassenger {
             public ElevatorStateMachine nextState() {
                 return CurrentFloorWaiting;
             }
         };
+
+        /**
+         * Next state elevator state machine.
+         *
+         * @return the elevator state machine
+         */
         public abstract ElevatorStateMachine nextState();
     }
 
@@ -89,6 +126,9 @@ public class ElevatorSubsystems {
         System.out.println(ElevatorName + " moved to floor " + currentFloor);
     }
 
+    /**
+     * Run subsystem.
+     */
     public void runSubsystem() {
         try {
             DatagramSocket socket = new DatagramSocket(port);
@@ -212,6 +252,11 @@ public class ElevatorSubsystems {
         return output;
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         ElevatorSubsystems elevator1 = new ElevatorSubsystems(1, "Elevator 1", 69);
         ElevatorSubsystems elevator2 = new ElevatorSubsystems(2, "Elevator 2", 70);

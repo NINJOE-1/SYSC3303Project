@@ -6,7 +6,7 @@ Bhavaan Balasubramaniam - 101233825
 
 ## Breakdown of the tasks:
 
-Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem,Created the Timing Diagrams.<br>
+Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem, Created the Timing Diagrams.<br>
 Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
 Bhavaan Balasubramaniam - Wrote README.md, reviewed the Timing Diagram.<br>
 
@@ -135,12 +135,12 @@ Elevator 1 is taking too long to close doors, potential error
 This shows the requests that were made, when they were completed based on the current time, and the output should have no errors. If the output has an error then the test has failed.
 
 ## Timing Diagrams:
-There were 2 possible scenarios for Timing Diagrams: 
-Terminologies: 
-1.) Status - Checks for Fault Detection
-2.) Opening - Checks the time for doors to open
-3.) Closing - Checks the time for doors to close
-4.) Moving - Checks the time for elevators to traverse through different floors
+There were 2 possible scenarios for Timing Diagrams:<br>
+Terminologies:<br>
+1. Status - Checks for Fault Detection<br>
+2. Opening - Checks the time for doors to open<br>
+3. Closing - Checks the time for doors to close<br>
+4. Moving - Checks the time for elevators to traverse through different floors<br>
 
 ## Doors stuck
 The purpose of this scenario will measure the time it takes for an elevator to open and close its doors within 1 full duration. More specifically,

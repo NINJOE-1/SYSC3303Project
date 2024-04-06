@@ -24,6 +24,7 @@ The requests are pending and completed requests.
 It consists of methods such as adding, processing, and completing events, ensuring there's thread-safe interactions.
 The 'run' method checks for accurate simulation of elevator movements and waiting periods.
 It ensures for fault detection and handling within the program.
+Graphic User Interface(GUI) is used to display information corresponding to the status of the elevators.
 
 ### [Event.java](src/Event.java)
 The Event class is responsible for maintaing elevator-related events which consists of timestamp (time), current floor (currentFloor), movement direction (move), and requested destination floor (destinationFloor).

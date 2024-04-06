@@ -51,7 +51,7 @@ To edit the floors and requests, edit the inputFile.txt file
 
 ## GUI
 
-This graphical user interface makes it easier to track elevator and floor operations. It displays elevators and their corresponding floors, providing consumers a clear image. However, it is important to realize that the interface is primarily for cosmetic reasons; the buttons are not clickable. They present a simulated elevator and floor options. The right half of the GUI provides buttons for each floor.The button will turn yellow to indicate that the request has been registered They serve to show the concept of floor selection. Meanwhile, the left side tracks elevator movements and updates their positions, levels, and orientations in real time. The interface allows users to monitor elevator operations and simulate floor selections.
+This graphical user interface makes it easier to track elevator and floor operations. It displays elevators and their corresponding floors, providing consumers a clear image. However, it is important to realize that the interface is primarily for cosmetic reasons; the buttons are not clickable. They present a simulated elevator and floor options. The right half of the GUI provides buttons for each floor. The button will turn yellow to indicate that the request has been registered. They serve to show the concept of floor selection. Meanwhile, the left side tracks elevator movements and updates their positions, levels, and orientations in real time. The interface allows users to monitor elevator operations and simulate floor selections.
 
 
 ![img_2.png](img_2.png)

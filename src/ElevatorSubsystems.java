@@ -28,10 +28,15 @@ public class ElevatorSubsystems {
     private ElevatorStateMachine currentState = ElevatorStateMachine.CurrentFloorWaiting;
     private InetAddress clientAddress;
     private int clientPort;
+    private Direction direction = Direction.IDLE;
     /**
      * The Zero byte.
      */
     static byte zeroByte = (byte) 0;
+
+    static byte upByte = (byte) 1;
+
+    static byte downByte = (byte) 2;
     /**
      * The F byte.
      */
@@ -53,6 +58,10 @@ public class ElevatorSubsystems {
         this.port = port;
         this.elevatorByte = (byte) (port-68);
         System.out.println(ElevatorName + " is waiting at " + currentFloor);
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     /**
@@ -116,6 +125,7 @@ public class ElevatorSubsystems {
     // create method move that takes in the current floor, direction, and desired floor
     private void move(Direction d, DatagramSocket socket) throws InterruptedException, IOException {
         Thread.sleep(6000);
+        direction = d;
         if (d == Direction.UP)
             currentFloor++;
         else if (d == Direction.DOWN)
@@ -175,6 +185,7 @@ public class ElevatorSubsystems {
                         }
 
                         case PickUpPassenger: {
+                            direction = Direction.IDLE;
                             System.out.println(ElevatorName + " has arrived at the request floor");
                             System.out.println(ElevatorName + " is picking up passenger");
                             sleep(12000);
@@ -195,6 +206,7 @@ public class ElevatorSubsystems {
                         }
 
                         case DropOffPassenger: {
+                            direction = Direction.IDLE;
                             System.out.println(ElevatorName + " has arrived at destination");
                             System.out.println(ElevatorName + " is dropping off passenger");
                             Calendar c = Calendar.getInstance();
@@ -226,7 +238,7 @@ public class ElevatorSubsystems {
         }
     }
     private byte[] response(Calendar c) {
-        byte[] output = new byte[5];
+        byte[] output = new byte[6];
         ByteBuffer buffer = ByteBuffer.wrap(output);
         buffer.put(fByte);
         byte hours = (byte) c.getTime().getHours();
@@ -237,16 +249,23 @@ public class ElevatorSubsystems {
         buffer.put(mins);
         buffer.put(secs);
         buffer.put(elevator);
+        buffer.put(zeroByte);
         output = buffer.array();
         return output;
     }
 
     private byte[] floor(int floor) {
-        byte[] output = new byte[4];
+        byte[] output = new byte[5];
         ByteBuffer buffer = ByteBuffer.wrap(output);
         buffer.put(zeroByte);
         buffer.put(elevatorByte);
         buffer.put((byte) floor);
+        if (direction == Direction.UP)
+            buffer.put(upByte);
+        else if (direction == Direction.DOWN)
+            buffer.put(downByte);
+        else
+            buffer.put(zeroByte);
         buffer.put(zeroByte);
         output = buffer.array();
         return output;

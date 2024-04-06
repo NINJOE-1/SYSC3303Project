@@ -8,6 +8,8 @@
  */
 
 // import statements
+import javax.swing.*;
+import java.awt.*;
 import java.net.*;
 import java.util.LinkedList;
 import static java.lang.Math.abs;
@@ -15,7 +17,7 @@ import static java.lang.Math.abs;
 /**
  * The type Scheduler.
  */
-public class Scheduler {
+public class Scheduler extends JFrame{
     // create class Scheduler
     private static LinkedList<Event> requests = new LinkedList<>();
     /**
@@ -30,6 +32,10 @@ public class Scheduler {
      * The Elevator used.
      */
     static int[] elevatorUsed = {0, 0, 0, 0};
+
+    static int[] numPeople = {0, 0, 0, 0};
+
+    static Direction[] elevatorDirections = {Direction.IDLE, Direction.IDLE, Direction.IDLE, Direction.IDLE};
     /**
      * The Server port.
      */
@@ -46,6 +52,22 @@ public class Scheduler {
      * The Start time.
      */
     static long[] startTime = new long[4];
+
+    static ImageIcon buttonIcon = new ImageIcon("button1.png");
+
+    static ImageIcon pressedIcon = new ImageIcon("button2.png");
+
+    static JLabel[] floorLabels = new JLabel[4];
+
+    static JLabel[] directionLabels = new JLabel[4];
+
+    static JLabel[][] buttonLabels = new JLabel[6][4];
+
+    static JPanel buttonPanel = new JPanel(new GridLayout(6, 4));
+
+    static JPanel mainPanel = new JPanel(new BorderLayout());
+
+
 
     /**
      * The enum Scheduler state machine.
@@ -93,16 +115,76 @@ public class Scheduler {
         public abstract schedulerStateMachine nextState();
     }
 
+    private Scheduler() {
+        setTitle("Scheduler");
+        JPanel elevatorPanel = new JPanel(new GridLayout(1, 5));
+        ImageIcon imageIcon = new ImageIcon("elevator.png");
+        for (int i = 0; i < 4; i++) {
+            JLabel imageLabel = new JLabel(imageIcon);
+            JLabel numberLabel = new JLabel("Elevator " + (i + 1), JLabel.CENTER);
+            floorLabels[i] = new JLabel("Floor: " + elevatorFloors[i], JLabel.CENTER);
+            directionLabels[i] = new JLabel("Direction: " + elevatorDirections[i], JLabel.CENTER);
+            JPanel subPanel = new JPanel(new BorderLayout());
+            subPanel.add(imageLabel, BorderLayout.CENTER);
+            JPanel textPanel = new JPanel(new GridLayout(3, 4));
+            textPanel.add(numberLabel, BorderLayout.SOUTH);
+            textPanel.add(floorLabels[i], BorderLayout.SOUTH);
+            textPanel.add(directionLabels[i], BorderLayout.SOUTH);
+            subPanel.add(textPanel, BorderLayout.SOUTH);
+            elevatorPanel.add(subPanel);
+
+        }
+        mainPanel.add(elevatorPanel, BorderLayout.WEST);
+        JPanel buttonPanel = new JPanel(new GridLayout(6, 4));
+        int floor = 24;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 6; j++) {
+                buttonLabels[j][i] = new JLabel(buttonIcon);
+                JLabel numberLabel = new JLabel("" + floor, JLabel.CENTER);
+                JPanel subPanel = new JPanel(new BorderLayout());
+                subPanel.add(buttonLabels[j][i], BorderLayout.CENTER);
+                subPanel.add(numberLabel, BorderLayout.SOUTH);
+                buttonPanel.add(subPanel);
+                floor--;
+            }
+        }
+        mainPanel.add(buttonPanel, BorderLayout.EAST);
+        add(mainPanel);
+        pack();
+    }
+
+    private static void resetButtons() {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 6; j++) {
+                buttonLabels[j][i].setIcon(buttonIcon);
+            }
+        }
+    }
+
+    private static void updateGUI() {
+        for (int i = 0; i < 4; i++) {
+            floorLabels[i].setText("Floor: " + elevatorFloors[i]);
+            directionLabels[i].setText("Direction: " + elevatorDirections[i]);
+        }
+        resetButtons();
+    }
+
+    private static void updateButtonImages(int floor) {
+        int i = (24 - floor) % 6;
+        int j = (24 - floor) / 6;
+        buttonLabels[i][j].setIcon(pressedIcon);
+    }
+
     private static int selectElevator(int requestFloor) {
         int elevator1Distance = abs(elevatorFloors[0] - requestFloor);
         int elevator2Distance = abs(elevatorFloors[1] - requestFloor);
         int elevator3Distance = abs(elevatorFloors[2] - requestFloor);
         int elevator4Distance = abs(elevatorFloors[3] - requestFloor);
-        if (((elevator1Distance == 0) || (elevator1Distance < elevator2Distance && elevator1Distance < elevator3Distance && elevator1Distance < elevator4Distance)) && elevatorUsed[0] == 0) {
+        if (((elevator1Distance == 0) || (elevator1Distance < elevator2Distance && elevator1Distance < elevator3Distance && elevator1Distance < elevator4Distance)) && elevatorUsed[0] == 0 && numPeople[0] < 6) {
             return 1;
-        } else if (((elevator2Distance == 0) || (elevator2Distance < elevator1Distance && elevator2Distance < elevator3Distance && elevator2Distance < elevator4Distance)) && elevatorUsed[1] == 0) {
+        } else if (((elevator2Distance == 0) || (elevator2Distance < elevator1Distance && elevator2Distance < elevator3Distance && elevator2Distance < elevator4Distance)) && elevatorUsed[1] == 0 && numPeople[1] < 6) {
             return 2;
-        } else if (((elevator3Distance == 0) || (elevator3Distance < elevator1Distance && elevator3Distance < elevator2Distance && elevator3Distance < elevator4Distance)) && elevatorUsed[2] == 0) {
+        } else if (((elevator3Distance == 0) || (elevator3Distance < elevator1Distance && elevator3Distance < elevator2Distance && elevator3Distance < elevator4Distance)) && elevatorUsed[2] == 0 && numPeople[2] < 6) {
             return 3;
         } else if (elevatorUsed[3] == 0){
             return 4;
@@ -118,6 +200,10 @@ public class Scheduler {
      */
 // create main method
     public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Scheduler gui = new Scheduler();
+            gui.setVisible(true);
+        });
         try {
             DatagramSocket receiveSocket = new DatagramSocket(23);
             DatagramSocket sendSocket = new DatagramSocket();
@@ -135,7 +221,9 @@ public class Scheduler {
                     InetAddress serverAddress = InetAddress.getLocalHost();
                     int selection = selectElevator(requestData[5]);
                     elevatorUsed[selection - 1] = 1;
+                    numPeople[selection - 1] += 1;
                     serverPort = 68 + selection;
+                    updateButtonImages(requestData[5]);
 
                     DatagramPacket forwardPacket = new DatagramPacket(requestData, requestData.length, serverAddress, serverPort);
                     String requestTime = Integer.toUnsignedString(requestData[1]) + ":" + Integer.toUnsignedString(requestData[2]) + ":" + Integer.toUnsignedString(requestData[3]);
@@ -146,7 +234,7 @@ public class Scheduler {
                     break receive;
                 }
 
-                byte[] responseData = new byte[5];
+                byte[] responseData = new byte[6];
                 DatagramPacket responsePacket = new DatagramPacket(responseData, 5);
                 elevator : try {
                     for (int i = 0; i < 5; i++) {
@@ -155,6 +243,9 @@ public class Scheduler {
                         sendSocket.receive(responsePacket);
                         if (responseData[0] == 15) {
                             elevatorUsed[i] = 0;
+                            numPeople[i] -= 1;
+                            elevatorDirections[responseData[4] - 1] = Direction.IDLE;
+                            updateGUI();
                             String completionTime = Integer.toUnsignedString(responseData[1]) + ":" + Integer.toUnsignedString(responseData[2]) + ":" + Integer.toUnsignedString(responseData[3]);
                             System.out.println("Received response from elevator subsystem at: " + completionTime);
                             DatagramPacket confirmation = new DatagramPacket(responseData, 5, clientAddress, clientPort);
@@ -162,11 +253,22 @@ public class Scheduler {
                             receiveSocket.send(confirmation);
                         } else {
                             if (responseData[0] == 0) {
+                                elevatorFloors[responseData[1] - 1] = responseData[2];
+                                if (responseData[3] == 1) {
+                                    elevatorDirections[responseData[1] - 1] = Direction.UP;
+                                } else if (responseData[3] == 2) {
+                                    elevatorDirections[responseData[1] - 1] = Direction.DOWN;
+                                } else {
+                                    elevatorDirections[responseData[1] - 1] = Direction.IDLE;
+                                }
+                                updateGUI();
+                                mainPanel.repaint();
                                 if (System.currentTimeMillis() - startTime[responseData[1] - 1] > 12000) {
                                     System.out.println("Elevator " + Integer.toUnsignedString(responseData[1]) + " is taking too long to close doors, potential error");
                                     byte[] error = {2, responseData[1], 0, 0, 0};
                                     DatagramPacket confirmation = new DatagramPacket(error, error.length, clientAddress, clientPort);
                                     receiveSocket.send(confirmation);
+                                    elevatorUsed[responseData[1] - 1] = 2;
                                 }
                                 startTime[responseData[1] - 1] = System.currentTimeMillis();
                             } else {
@@ -175,6 +277,7 @@ public class Scheduler {
                                     byte[] error = {2, responseData[1], 0, 0, 0};
                                     DatagramPacket confirmation = new DatagramPacket(error, error.length, clientAddress, clientPort);
                                     receiveSocket.send(confirmation);
+                                    elevatorUsed[responseData[1] - 1] = 2;
                                 }
                                 startTime[responseData[1] - 1] = System.currentTimeMillis();
                             }

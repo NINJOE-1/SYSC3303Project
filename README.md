@@ -1,4 +1,4 @@
-# SYSC 3303 Elevator Project Iteration 4
+# SYSC 3303 Elevator Project Iteration 5
 ## Group 9
 Joseph Vretenar 101234613<br>
 Samuel Mauricla - 101233500<br>
@@ -6,12 +6,12 @@ Bhavaan Balasubramaniam - 101233825
 
 ## Breakdown of the tasks:
 
-Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem,Created the Timing Diagrams.<br>
+Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and FloorSubsystem, Created the Timing Diagrams.<br>
 Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
 Bhavaan Balasubramaniam - Wrote README.md, reviewed the Timing Diagram.<br>
 
-## Project Iteration 4 : Adding Error detection and correction
-The purpose of Iteration 4 was to implement fault detection and handling faults. As well as, to implement timing events to measure for potential faults that could occur during the execution of the program. 
+## Project Iteration 5 : Capacity limits and User Interface
+The purpose of Iteration 5 was to implement a display console to show all the elevators in real-time as well as display any faults that occur. In addition, to implement a capacity limit to ensure an elevators carries no more than the maximum capacity.
 
 ## Files:
 ### [FloorSubsystem.java](src/FloorSubsystem.java)
@@ -135,13 +135,12 @@ Elevator 1 is taking too long to close doors, potential error
 This shows the requests that were made, when they were completed based on the current time, and the output should have no errors. If the output has an error then the test has failed.
 
 ## Timing Diagrams:
-There were 3 possible scenarios for Timing Diagrams: 
-Terminologies: 
-1.) Status - Checks for Fault Detection
-2.) Opening - Checks the time for doors to open
-3.) Closing - Checks the time for doors to close
-4.) Moving - Checks the time for elevators to traverse through different floors
-*Refer to Diagrams -> Timing Diagrams for the terms and output of the diagram
+There were 2 possible scenarios for Timing Diagrams:<br>
+Terminologies:<br>
+1. Status - Checks for Fault Detection<br>
+2. Opening - Checks the time for doors to open<br>
+3. Closing - Checks the time for doors to close<br>
+4. Moving - Checks the time for elevators to traverse through different floors<br>
 
 ## Doors stuck
 The purpose of this scenario will measure the time it takes for an elevator to open and close its doors within 1 full duration. More specifically,

@@ -67,7 +67,7 @@ public class Scheduler extends JFrame{
 
     static JPanel mainPanel = new JPanel(new BorderLayout());
 
-
+    static int[] elevatorRequest = {0, 0, 0, 0};
 
     /**
      * The enum Scheduler state machine.
@@ -166,7 +166,6 @@ public class Scheduler extends JFrame{
             floorLabels[i].setText("Floor: " + elevatorFloors[i]);
             directionLabels[i].setText("Direction: " + elevatorDirections[i]);
         }
-        resetButtons();
     }
 
     private static void updateButtonImages(int floor) {
@@ -221,6 +220,7 @@ public class Scheduler extends JFrame{
                     InetAddress serverAddress = InetAddress.getLocalHost();
                     int selection = selectElevator(requestData[5]);
                     elevatorUsed[selection - 1] = 1;
+                    elevatorRequest[selection - 1] = 1;
                     numPeople[selection - 1] += 1;
                     serverPort = 68 + selection;
                     updateButtonImages(requestData[5]);
@@ -260,6 +260,10 @@ public class Scheduler extends JFrame{
                                     elevatorDirections[responseData[1] - 1] = Direction.DOWN;
                                 } else {
                                     elevatorDirections[responseData[1] - 1] = Direction.IDLE;
+                                }
+                                if (elevatorRequest[responseData[1] - 1] == 1 && elevatorDirections[responseData[1] - 1] != Direction.IDLE) {
+                                    elevatorRequest[responseData[1] - 1] = 0;
+                                    resetButtons();
                                 }
                                 updateGUI();
                                 mainPanel.repaint();

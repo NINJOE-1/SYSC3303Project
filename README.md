@@ -48,6 +48,12 @@ The constants represent the different possible number of states the Elevator is 
 
 To edit the floors and requests, edit the inputFile.txt file
 
+## GUI
+
+elevators on left, floors on right, button turns yellow when pressed, elevators show floor and direction.
+
+![img_2.png](img_2.png)
+
 ## Testing
 1. Open the project in your preferred IDE.
 2. Make sure JUnit is installed on your system. If not, download and install it.

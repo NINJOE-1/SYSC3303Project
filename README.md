@@ -1,4 +1,4 @@
-# SYSC 3303 Elevator Project Iteration 4
+# SYSC 3303 Elevator Project Iteration 5
 ## Group 9
 Joseph Vretenar 101234613<br>
 Samuel Mauricla - 101233500<br>
@@ -10,8 +10,8 @@ Joseph Vretenar - Coded ElevatorSubsystem, Scheduler, Event, Direction, and Floo
 Samuel Mauricla - Coded FloorSubsystemTest, reviewed other code and documentation.<br>
 Bhavaan Balasubramaniam - Wrote README.md, reviewed the Timing Diagram.<br>
 
-## Project Iteration 4 : Adding Error detection and correction
-The purpose of Iteration 4 was to implement fault detection and handling faults. As well as, to implement timing events to measure for potential faults that could occur during the execution of the program. 
+## Project Iteration 5 : Capacity limits and User Interface
+The purpose of Iteration 5 was to implement a display console to show all the elevators in real-time as well as display any faults that occur. In addition, to implement a capacity limit to ensure an elevators carries no more than the maximum capacity.
 
 ## Files:
 ### [FloorSubsystem.java](src/FloorSubsystem.java)

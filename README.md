@@ -51,7 +51,7 @@ To edit the floors and requests, edit the inputFile.txt file
 
 ## GUI
 
-elevators on left, floors on right, button turns yellow when pressed, elevators show floor and direction.
+elevators on left, floors on right, button turns yellow when pressed, elevators show floor and direction. This graphical user interface visualizes elevators and floors, allowing users to easily interact with and operate them. 
 
 ![img_2.png](img_2.png)
 

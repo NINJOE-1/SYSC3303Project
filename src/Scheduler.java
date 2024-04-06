@@ -1,5 +1,5 @@
 /**
- * SYSC 3303 Elevator Project Iteration 3
+ * SYSC 3303 Elevator Project Iteration 5
  * Group 9
  *  Joseph Vretenar - 101234613
  *  Samuel Mauricla - 101233500
@@ -33,8 +33,14 @@ public class Scheduler extends JFrame{
      */
     static int[] elevatorUsed = {0, 0, 0, 0};
 
+    /**
+     * The Num people.
+     */
     static int[] numPeople = {0, 0, 0, 0};
 
+    /**
+     * The Elevator directions.
+     */
     static Direction[] elevatorDirections = {Direction.IDLE, Direction.IDLE, Direction.IDLE, Direction.IDLE};
     /**
      * The Server port.
@@ -53,20 +59,44 @@ public class Scheduler extends JFrame{
      */
     static long[] startTime = new long[4];
 
+    /**
+     * The Button icon.
+     */
     static ImageIcon buttonIcon = new ImageIcon("button1.png");
 
+    /**
+     * The Pressed icon.
+     */
     static ImageIcon pressedIcon = new ImageIcon("button2.png");
 
+    /**
+     * The Floor labels.
+     */
     static JLabel[] floorLabels = new JLabel[4];
 
+    /**
+     * The Direction labels.
+     */
     static JLabel[] directionLabels = new JLabel[4];
 
+    /**
+     * The Button labels.
+     */
     static JLabel[][] buttonLabels = new JLabel[6][4];
 
+    /**
+     * The Button panel.
+     */
     static JPanel buttonPanel = new JPanel(new GridLayout(6, 4));
 
+    /**
+     * The Main panel.
+     */
     static JPanel mainPanel = new JPanel(new BorderLayout());
 
+    /**
+     * The Elevator request.
+     */
     static int[] elevatorRequest = {0, 0, 0, 0};
 
     /**

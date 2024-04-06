@@ -1,5 +1,5 @@
 /**
- * SYSC 3303 Elevator Project Iteration 3
+ * SYSC 3303 Elevator Project Iteration 5
  * Group 9
  *  Joseph Vretenar - 101234613
  *  Samuel Mauricla - 101233500
@@ -34,8 +34,14 @@ public class ElevatorSubsystems {
      */
     static byte zeroByte = (byte) 0;
 
+    /**
+     * The Up byte.
+     */
     static byte upByte = (byte) 1;
 
+    /**
+     * The Down byte.
+     */
     static byte downByte = (byte) 2;
     /**
      * The F byte.
@@ -60,6 +66,11 @@ public class ElevatorSubsystems {
         System.out.println(ElevatorName + " is waiting at " + currentFloor);
     }
 
+    /**
+     * Gets direction.
+     *
+     * @return the direction
+     */
     public Direction getDirection() {
         return direction;
     }

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * The type Scheduler.
  */
-public class SchedulerTest {
+public class SchedulerTestIteration4 {
     // create class Scheduler
     private static LinkedList<Event> requests = new LinkedList<>();
     /**

@@ -150,7 +150,7 @@ Terminologies:<br>
 3. Closing - Checks the time for doors to close<br>
 4. Moving - Checks the time for elevators to traverse through different floors<br>
 
-## Doors stuck
+### Doors stuck
 The purpose of this scenario will measure the time it takes for an elevator to open and close its doors within 1 full duration. More specifically,
 the time it takes to open doors is 4 seconds, it takes 3 seconds for the doors to close. Status will change from 1 to 0 after 8 seconds, if the doors
 have not reported that they closed.
